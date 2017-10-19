@@ -1,0 +1,23 @@
+{
+  "name": "node-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sysuzhyupeng/node-demo.git"
+  },
+  "author": "sysuzhyupeng",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sysuzhyupeng/node-demo/issues"
+  },
+  "homepage": "https://github.com/sysuzhyupeng/node-demo#readme",
+  "devDependencies": {
+    "socket.io": "~0.9.6",
+    "mime": "~1.2.7"
+  }
+}
