@@ -117,8 +117,111 @@ async提供了`series()`方法来实现一串任务的串行执行
 ```
 当我们需要并行的时候，async提供了`parallel`方法，它的调用等价于以下代码
 ```javascript
-  
+  var counter = 2;
+  var results = [];
+  var done = function(index, value){
+    result[index] = value;
+    counter--;
+    if(counter == 0){
+      callback(null, results);
+    }
+  }
+  //只传递第一个异常
+  var hasErr = false;
+  var fail = function(err){
+    if(!hasErr){
+      hasErr = true;
+      callback(err);
+    }
+  }
+  fs.readFile('file1.txt', 'utf-8', function(err, content){
+    if(err){
+      return fail(err);
+    }
+    //如果没有异常
+    done(0, content);
+  })
+  fs.readFile('file2.txt', 'utf-8', function(err, content){
+    if(err){
+      return fail(err);
+    }
+    //如果没有异常
+    done(1, content);
+  })
 ```
+
+内存控制
+-
+在v8中，所有的内存都是通过堆来分配的。通常造成内存泄漏的原因有以下几个：
+
+ * 缓存
+ * 队列消费不及时
+ * 作用域未释放
+ 
+缓存一旦命中，访问效率比I/O高。但是对于node来说，直接使用内存中的对象来做缓存与严格意义上的缓存又有区别，
+因为严格意义的缓存有完善的过期策略，而普通对象并没有。所以这样使用时要严格注意。
+
+Buffer
+-
+在node中需要处理网络协议、操作数据库、处理图片、接收上传文件等，js的String对象不能满足这些需求，也就有了`Buffer`对象。
+`Buffer`对象类似于数组，它的元素为16位的二进制数，即0到255的值
+```javascript]
+  var str = '示例';
+  var buf = new Buffer(str);
+  console.log(buf);
+```
+
+网络编程
+-
+我们都知道TCP需要三次握手才能形成会话。可以在node中创建一个TCP服务器
+```javascript
+  var net = require('net');
+  var server = net.createServer(function(socket){
+    socket.on('data', function(data){
+      console.log('hello');  
+    })
+    socket.on('end', function(data){
+      console.log('end');  
+    })
+  })
+```
+HTTP构建在TCP上，属于应用层。在HTTP的两端是浏览器客户端和服务器，即著名的B/S模式。
+node的http模块包含对http协议的封装。
+
+Resful
+-
+rest的全称是Representational State Transfer，也就是表现层状态转化，符合rest设计的，我们称为restful设计。
+它的设计主要将服务器提供的内容实体当做一个资源，并体现在URL上。过去我们对用户增删改查是这样的
+```javascript
+  POST /user/add?name=sysuzhyupeng
+  GET /user/delete?name=sysuzhyupeng
+  POST /user/update?name=sysuzhyupeng
+  GET /user/get?name=sysuzhyupeng
+```
+而在restful设计中
+```javascript
+  POST /user/sysuzhyupeng
+  DELETE /user/sysuzhyupeng
+  PUT /user/sysuzhyupeng
+  GET /user/sysuzhyupeng
+```
+
+中间件
+-
+中间件用来隔离基础设施与业务逻辑之间的细节，让开发者能够关注在业务的开发上，提升开发效率。比如记录访问日志、cookie、异常处理等。
+
+负载均衡
+-
+在多进程之间监听相同的端口，使得用户请求可以分散到多个进程上进行处理。node默认提供的机制是操作系统的抢占式策略。
+
+状态共享
+-
+解决数据共享最直接的方式就是使用第三方来进行数据存储，比如把数据存放到数据库、磁盘文件、缓存服务等。存在的问题是如果数据改变，
+还需要一种机制通知到多个子进程，轮询是一种解决方案。
+
+
+
+
 
 
 
