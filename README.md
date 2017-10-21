@@ -56,7 +56,7 @@ JSON文件编译
   var isFunction = isType('function');
 ```
 
-node异步难点
+node异常处理
 -
 在我们处理异常的时候，通常使用类java的`try/catch`
 ```javascript
@@ -66,4 +66,61 @@ node异步难点
      //todo
    }
 ```
-但是在异步编程中，异步I/O的实现主要有两个阶段：提交请求和处理结果。
+但是在异步编程中，异步I/O的实现主要有两个阶段：提交请求和处理结果。这两个阶段有事件循环的调度，异步方法在第一个阶段之后就返回，因为异常不一定发生在这个阶段，所以`try/catch`不会有任何作用。异步方法的定义如下：
+```javascript
+  var async = function(callback){
+     process.nextTick(callback);
+  }
+  //调用的时候
+  try {
+    async(callback);
+  } catch(e){
+    //todo
+  }
+```
+于是node在异常处理形成一种约定，将异常作为回调函数的第一个参数返回，如果为空值，则表明异步调用没有异常抛出。
+
+异步嵌套过深
+-
+在node调用中，事务中存在异步操作的比比皆是
+```javascript
+  fs.readdir(path.join(__dirname, '..'), 'utf-8', function(err, files){
+    db.query(sql, function(err, data){
+      //other async
+    })
+  })
+```
+有几个方法可以解决这个问题，比如事件的发布/订阅模式，node提供的`events`模块是发布/订阅的简单模式实现
+```javascript
+  emmiter.on('event1', function(messagge){
+    console.log(message);
+  })
+  emmiter.emit('event1', 'msg!');
+```
+同时这个模式也是一种钩子（hook），利用钩子导出内部的数据给外部调用。
+还有`promise`也是一个解决方案。
+
+async
+-
+async提供了`series()`方法来实现一串任务的串行执行
+```javascript
+  async.series([
+    function(){
+      fs.readFile('file1.txt', 'utf-8', callback);
+    },
+    function(){
+      fs.readFile('file2.txt', 'utf-8', callback);
+    }
+  ], function(err, results){
+    // results为[file1.txt, file2.txt]
+  })
+```
+当我们需要并行的时候，async提供了`parallel`方法，它的调用等价于以下代码
+```javascript
+  
+```
+
+
+
+
+
