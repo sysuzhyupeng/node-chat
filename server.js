@@ -11,7 +11,6 @@ var mime = require('mime');
 */
 var cache = {};
 
-
 /*
 	在创建HTTP服务器时，需要给createServer传入一个匿名函数作为回调函数，
 	由它来处 理每个HTTP请求。这个回调函数接受两个参数:request和response。
@@ -27,10 +26,19 @@ var server = http.createServer(function(req, res){
 	var absPath = './' + filePath;
 	serveStatic(res, cache, absPath);
 });
+
 //使用 node server.js启动即可
 server.listen(8080, function(){
 	console.log('server listen on port 8080');
-})
+});
+
+
+
+/*
+	启动 Socket.IO服务器，给它提供一个已经定义好的HTTP服务器，这样它就能跟HTTP服务器共享同一 个TCP/IP端口
+*/
+var chatServer = require('./lib/chat_server');
+chatServer.listen(server);
 
 function send404(res){
 	res.writeHead(404, {'Content-Type': 'text/plain'});
