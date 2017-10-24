@@ -12,9 +12,11 @@ Chat.prototype.sendMessage = function(room, text){
 		room: room,
 		text: text
 	}
+	//发送message事件，服务器端接收
 	this.socket.emit('message', message);
 }
 Chat.prototype.changeRoom = function(room){
+	//发送join事件
 	this.socket.emit('join', {
 		newRoom: room
 	});
@@ -27,5 +29,44 @@ Chat.prototype.processCommand = function(command){
 	switch(command){
 		case 'join': 
 			words.shift();
+			var room = words.join(' ');
+			this.changeRoom(room);
+			break;
+		case 'nick':
+			words.shift();
+			var name = words.join(' ');
+			//
+			this.socket.emit('nameAttempt', name);
+			break;
+		default:
+			message = 'unrecognized command';
+			break;
 	}
+	return message;
 }
+//处理用户原始输入
+function processUserInput(chatApp, socket){
+	var message = $('#send-message').val();
+	var systemMessage;
+	//以斜杠开头作为聊天命令
+	if(message.charAt(0) == '/'){
+		systemMessage = chatApp.processCommand(message);
+		if(systemMessage){
+			$('#message').append(divSystemContentElement(message));
+		}
+	} else {
+		chatApp.sendMessage($('#room').text(), message);
+		$('#message').append(divEscapedContentElement(message));
+		$('#message').scrollTop($('#message').prop('scrollHeight'));
+	}
+	$('#send-message').val('');
+}
+
+var socket = io.connect();
+$(document).ready(function(){
+	var chatApp = new Chat(socket);
+	//绑定socket事件，由服务器端触发
+	socket.on('nameResult', function(result){
+		var message;
+	})
+})
