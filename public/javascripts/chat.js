@@ -35,13 +35,13 @@ Chat.prototype.processCommand = function(command){
 		case 'join': 
 			words.shift();
 			var room = words.join(' ');
-			console.log('room', room);
 			this.changeRoom(room);
 			break;
 		case 'nick':
 			words.shift();
+			//将/nick shift出去之后去除空格
 			var name = words.join(' ');
-			this.socket.emit('nameAttempt', name);
+			this.socket.emit('nameAttempts', name);
 			break;
 		default:
 			message = 'unrecognized command';
@@ -100,6 +100,7 @@ $(document).ready(function(){
 	});
 	socket.on('rooms', function(rooms){
 		//room-list中保存进入
+		console.log(111, rooms);
 		$('#room-list').empty();
 		for(var room in rooms){
 			room = room.substring(1, room.length);
