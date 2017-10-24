@@ -28,8 +28,8 @@ var server = http.createServer(function(req, res){
 });
 
 //使用 node server.js启动即可
-server.listen(8080, function(){
-	console.log('server listen on port 8080');
+server.listen(3000, function(){
+	console.log('server listen on port 3000');
 });
 
 
