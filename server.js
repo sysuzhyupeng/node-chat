@@ -6,7 +6,9 @@ var path = require('path');
 var mime = require('mime');
 
 /*
-	用来缓存文件内容，访问内存(RAM)要比访问文件系统快得多，所以Node程序通常会把常用的数据缓存到内存里。
+	用来缓存文件内容，
+	访问内存(RAM)要比访问文件系统快得多，
+	所以Node程序通常会把常用的数据缓存到内存里。
 	这里设置为全局变量
 */
 var cache = {};
@@ -35,7 +37,9 @@ server.listen(3000, function(){
 
 
 /*
-	启动 Socket.IO服务器，给它提供一个已经定义好的HTTP服务器，这样它就能跟HTTP服务器共享同一 个TCP/IP端口
+	启动 Socket.IO服务器，
+	给它提供一个已经定义好的HTTP服务器，
+	这样它就能跟HTTP服务器共享同一 个TCP/IP端口
 */
 var chatServer = require('./lib/chat_server');
 chatServer.listen(server);

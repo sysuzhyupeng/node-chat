@@ -100,7 +100,6 @@ $(document).ready(function(){
 	});
 	socket.on('rooms', function(rooms){
 		//room-list中保存进入
-		console.log(111, rooms);
 		$('#room-list').empty();
 		for(var room in rooms){
 			room = room.substring(1, room.length);
@@ -113,11 +112,11 @@ $(document).ready(function(){
 			chatApp.processCommand('/join ' + $(this).text());
 			$('#send-message').focus();
 		});
-		//定期请求可用房间列表
-		setInterval(function(){
-			socket.emit('rooms');
-		}, 1000);
 	});
+	//定期请求可用房间列表
+	setInterval(function(){
+		socket.emit('rooms');
+	}, 1000);
 	$('#send-message').focus();
 	$('#send-form').submit(function(event) {
 		processUserInput(chatApp, socket);
