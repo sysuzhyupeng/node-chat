@@ -1,8 +1,47 @@
+demo使用
+-
+进入根目录`npm install`之后，使用`node server.js`启动应用，就可以在浏览器
+localhost:3000中预览了。这里实现一个聊天室，使用`socket.io`进行双工通信。
+`socket.io`主要通过`on`来注册事件，使用`emit`来发射/触发事件。
+
+事件发射器
+-
+一个Node HTTP服务器实例就是一个事件发射器，一个可以继承、能够添加事件发射及处理
+能力的类（EventEmitter）。node的很多核心功能都继承自EventEmitter，我们也能创建自己的事件发射器。
+
 node简介
 -
 node是以事件驱动和异步的模型来构建的。js从来没有过标准的I/O库，那是服务端语言的常见配置。
 node重新实现了宿主中那些常用的对象，比如计时器API(比如setTimeout)和控制台API(比如console.log)。
 node还有一组用来处理多种网络和文件I/O的核心模块。其中包括用于HTTP、TLS、HTTPS、 文件系统(POSIX)、数据报(UDP)和NET(TCP)的模块。
+
+http模块
+-
+Node的核心是一个强大的流式HTTP解析器，大概由1500行经过优化的C代码组成，这个解析器跟Node开放给JavaScript的底层TCP API相结合，提供了一个非常底层，但也非常灵活的HTTP服务器。
+
+服务器每收到一条HTTP请求，都会用新的req和res对象触发请求回调函数。在触发回调函数之前，Node会解析请求的HTTP头，并将它们作为req对象的一部分提供给请求回调
+。这时控制权交给回调函数。
+
+node不会自动往客户端写任何响应。在调用完请求回调函数之后，就要由你负责用`res.end()`方法结束响应了。
+
+静态文件服务
+-
+像Apache和IIS之类传统的HTTP服务器首先是个文件服务器。每个静态文件服务器都有个根目录，也就是提供文件服务的基础目录。
+
+`__dirname`是一个特别的变量，它的值是改文件所在目录的路径，在每个文件中的值不同。
+下一步是得到URL的pathname，以确定被请求文件的路径。如果URL的pathname是
+/index.html，并且我们的根目录是/var/www/example.com/public，用path模块的.join()方法把这些联接起来就能得到绝对路径/var/www/example.com/public/index.html。
+
+有了文件的路径，还需要传输文件的内容。这可以用高层流式硬盘访问fs.ReadStream完成，它是Node中Stream类之一。
+```
+  var url = parse(req.url);
+  var path = join(__dirname, url.pathname);
+  var stream = fs.createReadStream(path);
+  stream.on('data', function(chunk){
+    res.write(chunk);
+  })
+```
+除了readStream，node还提供了Stream.pipe()来优化文件传输。
 
 数据流
 -
@@ -39,6 +78,9 @@ node在数据流和数据流动上也很强大。可以把数据流看成特殊�
     }
   })
 ```
+exports只是对module.exports的一个全局引用，所以不能将exports指向其他引用
+node中有一个独特的模块引入机制，可以不必知
+道模块在文件系统中的具体位置。这个机制就是使用node_modules目录。
 
 JSON文件编译
 -
@@ -83,7 +125,13 @@ node异常处理
 
 异步嵌套过深
 -
-在node调用中，事务中存在异步操作的比比皆是
+需要一个接着一个做的任务叫做串行任务。创建一个目录并往里放一个文件的任务就是串行的。我们不能在创建目录前往里放文件。
+不需要一个接着一个做的任务叫做并行任务。这些任务彼此之间开始和结束的时间并不重要，但在后续逻辑执行之前它们应该全部做完。
+
+下载几个文件然后把它们压缩到一个zip归档文件中就是并行任务。
+为了让异步任务并行执行，仍然是要把任务放到数组中，但任务的存放顺序无关紧要。每个任务都应该调用处理器函数增加已完成任务的计数值。每个任务执行完都要检查是否计数值已经满足条件。
+
+在node调用中，事务中存在串行任务的比比皆是：
 ```javascript
   fs.readdir(path.join(__dirname, '..'), 'utf-8', function(err, files){
     db.query(sql, function(err, data){
