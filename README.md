@@ -43,6 +43,40 @@ node不会自动往客户端写任何响应。在调用完请求回调函数之�
 ```
 除了readStream，node还提供了Stream.pipe()来优化文件传输。
 
+formidable模块
+-
+文件上传也是一个非常常见的功能。要正确处理上传的文件， 并接收到文件的内容， 需要把表单的enctype 属性设为multipart/form-data，这是个适用于BLOB（大型二进制文件）的MIME类型。
+
+以高效流畅的方式解析文件上传请求并不是个简简单单的任务，Node社区中有几个可以完成这项任务的模块。formidable就是其中之一。Formidable的progress事件能给出收到的字节数，以及期望收到的字节数。我们可以借助这个做出一个进度条。
+每次有progress事件激发，就会计算百分比并把进度传回到用户的浏览器中去。
+
+数据存储
+-
+存储数据的方法很多：
+
+ * 内存
+ * 保存在文件中
+ * 非关系数据库
+ * 关系数据库管理系统（RDBMS）
+
+Redis非常适合处理那些不需要长期访问的简单数据存储，比如短信和游戏中的数据。Redis把数据存在RAM中，并在磁盘中记录数据的变化。这样做的缺点是它的存储空间有限，但好处是数据操作非常快。如果Redis服务器崩溃，RAM中的内容丢了，可以用磁盘中的日志恢复数据。
+
+连接redis数据库之后，可以马上用`client`对象操作数据。
+```
+  var redis = require('redis');
+  var client = redis.createClient(6379, '127.0.0.1');
+
+  client.set('camping', {
+    'shelter': 1,
+    'cooking': 2
+  }, redis.print);
+  client.get('camping', 'cooking', function(err, value){
+    if(err) throw err;
+    console.log('Cooking is ' + value);
+  })
+```
+链表是Redis支持的另一种数据结构。如果内存足够大，Redis链表理论上可以存放40多亿条元素。
+
 数据流
 -
 node在数据流和数据流动上也很强大。可以把数据流看成特殊的数组，只不过数组中的数据分散在空间上，而数据流中的数据是分散在时间上的。
@@ -258,6 +292,7 @@ rest的全称是Representational State Transfer，也就是表现层状态转化
 中间件
 -
 中间件用来隔离基础设施与业务逻辑之间的细节，让开发者能够关注在业务的开发上，提升开发效率。比如记录访问日志、cookie、异常处理等。
+Connect是一个框架，它使用被称为中间件的模块化组件，以可重用的方式实现Web程序中的逻辑。在Connect中，中间件组件是一个函数，它拦截HTTP服务器提供的请求和响应对象，执行逻辑，然后或者结束响应，或者把它传递给下一个中间件组件。
 
 负载均衡
 -
