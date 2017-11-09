@@ -1,6 +1,6 @@
 demo使用
 -
-进入根目录`npm install`之后，使用`node server.js`启动应用，就可以在浏览器
+进入项目根目录`npm install`之后，使用`node server.js`启动应用，就可以在浏览器
 localhost:3000中预览了。这里实现一个聊天室，使用`socket.io`进行双工通信。
 `socket.io`主要通过`on`来注册事件，使用`emit`来发射/触发事件。
 
@@ -11,7 +11,7 @@ localhost:3000中预览了。这里实现一个聊天室，使用`socket.io`进�
 
 node简介
 -
-node是以事件驱动和异步的模型来构建的。js从来没有过标准的I/O库，那是服务端语言的常见配置。
+node是以事件驱动和异步的模型来构建的。js从来没有过标准的I/O库，I/O库是服务端语言的常见配置。
 node重新实现了宿主中那些常用的对象，比如计时器API(比如setTimeout)和控制台API(比如console.log)。
 node还有一组用来处理多种网络和文件I/O的核心模块。其中包括用于HTTP、TLS、HTTPS、 文件系统(POSIX)、数据报(UDP)和NET(TCP)的模块。
 
