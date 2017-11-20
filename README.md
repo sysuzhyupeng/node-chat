@@ -1,7 +1,7 @@
 demo使用
 -
-进入项目根目录`npm install`之后，使用`node server.js`启动应用，就可以在浏览器
-localhost:3000中预览了。这里实现一个聊天室，使用`socket.io`进行双工通信。
+进入项目根目录`npm install`之后，使用`node server.js`启动应用，可在浏览器
+localhost:3000中预览。使用`socket.io`实现一个聊天室，进行双工通信。
 `socket.io`主要通过`on`来注册事件，使用`emit`来发射/触发事件。
 
 事件发射器
